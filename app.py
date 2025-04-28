@@ -9,8 +9,15 @@ app = Flask(__name__)
 
 # 宣告首頁的路徑
 @app.route("/")
-# 宣告立刻被執行的 function 方法
+# 宣告首頁立刻被執行的 function 方法
 def index():
+    return render_template("index.html")
+
+
+# 宣告網頁的路徑
+@app.route("/books")
+# 宣告網頁立刻被執行的 function 方法
+def books_page():
     # return f"<h1>Hello World!</h1><br>{datetime.now()}"
     books = {1: "Python book", 2: "Java book", 3: "Flask book"}
     for key in books:
@@ -48,7 +55,7 @@ def index():
     nowtime = datetime.now().strftime("%Y-%m-%d")
     print(username, nowtime)
     return render_template(
-        "index.html", name=username, now=nowtime, books=books, books_2=books_2
+        "books.html", name=username, now=nowtime, books=books, books_2=books_2
     )
 
 
@@ -69,7 +76,12 @@ def get_bmi():
 
     bmi = round(weight / (height / 100) ** 2, 2)
     # return {"height": height, "weight": weight, "bmi": bmi}
-    return render_template("bmi.html", height=height, weight=weight, bmi=bmi)
+    # return render_template("bmi.html", height=height, weight=weight, bmi=bmi)
+
+    # **locals() -> 會把區域端的所有變數全部都丟過去，
+    # 好處是 : 當要傳遞的參數很多時，不用一個一個寫
+    # 壞處是 : 效能會變差
+    return render_template("bmi.html", **locals())
 
 
 # 讓 Flask Server run 起來
