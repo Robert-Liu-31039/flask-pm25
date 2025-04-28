@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from datetime import datetime
 import pymysql
 import pandas as pd
+from pm25 import get_pm25_data_from_mysql
 
 # __name__ <- 指的就是本頁
 app = Flask(__name__)
@@ -11,7 +12,8 @@ app = Flask(__name__)
 @app.route("/")
 # 宣告首頁立刻被執行的 function 方法
 def index():
-    return render_template("index.html")
+    columns, datas = get_pm25_data_from_mysql()
+    return render_template("index.html", **locals())
 
 
 # 宣告網頁的路徑
@@ -84,5 +86,9 @@ def get_bmi():
     return render_template("bmi.html", **locals())
 
 
-# 讓 Flask Server run 起來
-app.run(debug=True)
+# 當程式是跑在本地運行的時候，才會跑以下的程式碼，
+# 不然若是有其他程式 call 你這支程式碼時，
+# 就會把以下的程式自動 run 起來了(誤跑)!
+if __name__ == "__main__":
+    # 讓 Flask Server run 起來
+    app.run(debug=True)
