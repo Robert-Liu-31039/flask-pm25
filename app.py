@@ -68,7 +68,8 @@ def get_bmi():
     weight = eval(request.args.get("weight"))
 
     bmi = round(weight / (height / 100) ** 2, 2)
-    return {"height": height, "weight": weight, "bmi": bmi}
+    # return {"height": height, "weight": weight, "bmi": bmi}
+    return render_template("bmi.html", height=height, weight=weight, bmi=bmi)
 
 
 # 讓 Flask Server run 起來
