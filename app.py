@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from datetime import datetime
 import pymysql
 import pandas as pd
@@ -59,6 +59,16 @@ def get_pm25_data():
     datas["datacreationdate"] = pd.to_datetime(datas["datacreationdate"])
     df = datas.drop(datas[datas["pm25"].isna()].index)
     return df.values.tolist()
+
+
+@app.route("/bmi")
+def get_bmi():
+    # request.args.get("@參數名稱) -> 根據 form 所回傳的參數內容，去做參數的值的接取
+    height = eval(request.args.get("height"))
+    weight = eval(request.args.get("weight"))
+
+    bmi = round(weight / (height / 100) ** 2, 2)
+    return {"height": height, "weight": weight, "bmi": bmi}
 
 
 # 讓 Flask Server run 起來

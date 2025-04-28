@@ -24,11 +24,24 @@
             border: 1px solid black;
             width: 300px;
         }
+
+        form{
+            color: blue;
+        }
     </style>
 </head>
 <body>
     <h1> {{name}} 歡迎登入</h1>
     <p>目前時間:{{now}}</p>
+
+    <form action="/bmi">
+        <label for="">身高</label>
+        <input type="number" name="height">
+        <label for="">體重</label>
+        <input type="number" name="weight">
+        <br>
+        <button type="submit">計算</button>
+    </form>
 
     {{books[3]}}
     <br>
