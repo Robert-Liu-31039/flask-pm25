@@ -22,7 +22,7 @@ def get_pm25_data_from_mysql():
         conn = open_db()
         cursor = conn.cursor()
 
-        sqlstr = "select * from pm25;"
+        sqlstr = "select * from pm25 where datacreationdate = (select MAX(datacreationdate) from pm25);"
         cursor.execute(sqlstr)
 
         # 取得 Table 的欄位名稱
@@ -44,5 +44,5 @@ def get_pm25_data_from_mysql():
 # 不然若是有其他程式 call 你這支程式碼時，
 # 就會把以下的程式自動 run 起來了(誤跑)!
 if __name__ == "__main__":
-    datas = get_pm25_data_from_mysql()
-    print(datas)
+    columns, datas = get_pm25_data_from_mysql()
+    print(columns, datas)
