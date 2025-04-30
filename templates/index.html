@@ -4,25 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>首頁</title>
-    <style>
-        body{
-            text-align: center;
-            background-color: aquamarine;
-        }
-
-        table{
-            width: 80%;
-            margin: 0 auto ;
-        }
-
-        th{
-            background: wheat;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>細懸浮微粒資料(PM2.5)</h1>
-    <a href="/update-db">更新資料庫</a>
+    <a class="btn-update" href="/update-db">更新資料庫</a>
     <table border="1">
         <thead>
             <tr>
