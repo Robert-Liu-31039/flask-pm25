@@ -10,6 +10,18 @@
     <h1>細懸浮微粒資料(PM2.5)</h1>
     <h3>最新更新時間: {{datas[0][4]}}</h3>
     <a class="btn-update" href="/update-db">更新資料庫</a>
+
+    <form action="/filter" method="post">
+        <label for="county">選取縣市</label>
+        <!-- 縣市選擇框 -->
+        <select name="county" id="county">
+            {% for county in counties %}
+            <option value="{{county}}">{{county}}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">查詢</button>
+    </form>
+
     <table border="1">
         <thead>
             <tr>

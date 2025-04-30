@@ -13,8 +13,29 @@ app = Flask(__name__)
 @app.route("/")
 # 宣告首頁立刻被執行的 function 方法
 def index():
+    # 取得資藥庫最新資料
     columns, datas = get_pm25_data_from_mysql()
+
+    # 取出不同縣市
+    df = pd.DataFrame(datas, columns=columns)
+    counties = sorted(df["county"].unique().tolist())
+
     return render_template("index.html", **locals())
+
+
+# 宣告 form 使用 POST 傳遞資料
+@app.route("/filter", methods=["POST"])
+def filter_data():
+    # form 使用 POST 傳遞資料，接收的寫法就要改為 : request.form.get("@參數名稱")
+    county = request.form.get("county")
+
+    columns, datas = get_pm25_data_from_mysql()
+
+    # 取得該縣市的資料
+    df = pd.DataFrame(datas, columns=columns)
+    df1 = df.groupby("county").get_group(county)
+    print(df1)
+    return {"county": county}
 
 
 # 宣告網頁的路徑
