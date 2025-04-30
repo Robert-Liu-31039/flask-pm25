@@ -40,9 +40,49 @@ def get_pm25_data_from_mysql():
     return columns, datas
 
 
+# 更新資料庫
+def update_db():
+    conn = None
+    api_url = "https://data.moenv.gov.tw/api/v2/aqx_p_02?api_key=540e2ca4-41e1-4186-8497-fdd67024ac44&limit=1000&sort=datacreationdate%20desc&format=CSV"
+    sqlstr = """
+insert ignore into pm25(site, county, pm25, datacreationdate, itemunit) 
+values(%s,%s,%s,%s,%s);
+"""
+    row_count = 0
+    message = ""
+
+    try:
+        # 讀取最新的雲端資料
+        datas = pd.read_csv(api_url, encoding="utf-8-sig")
+        datas["datacreationdate"] = pd.to_datetime(datas["datacreationdate"])
+        df = datas.drop(datas[datas["pm25"].isna()].index)
+        values = df.values.tolist()
+
+        # 寫入資料庫
+        conn = open_db()
+        cursor = conn.cursor()
+        cursor.executemany(sqlstr, values)
+        row_count = cursor.rowcount
+        conn.commit()
+
+        print(f"更新{row_count}筆資料成功!")
+        message = "更新資料庫成功!"
+
+    except Exception as ex:
+        print(ex)
+        message = f"更新資料庫失敗{ex}"
+    finally:
+        if conn is not None:
+            conn.close()
+
+    return row_count, message
+
+
 # 當程式是跑在本地運行的時候，才會跑以下的程式碼，
 # 不然若是有其他程式 call 你這支程式碼時，
 # 就會把以下的程式自動 run 起來了(誤跑)!
 if __name__ == "__main__":
-    columns, datas = get_pm25_data_from_mysql()
-    print(columns, datas)
+    # columns, datas = get_pm25_data_from_mysql()
+    # print(columns, datas)
+
+    update_db()

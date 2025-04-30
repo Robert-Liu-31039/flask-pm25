@@ -2,7 +2,8 @@ from flask import Flask, render_template, request
 from datetime import datetime
 import pymysql
 import pandas as pd
-from pm25 import get_pm25_data_from_mysql
+from pm25 import get_pm25_data_from_mysql, update_db
+import json
 
 # __name__ <- 指的就是本頁
 app = Flask(__name__)
@@ -84,6 +85,19 @@ def get_bmi():
     # 好處是 : 當要傳遞的參數很多時，不用一個一個寫
     # 壞處是 : 效能會變差
     return render_template("bmi.html", **locals())
+
+
+# 更新資料庫
+@app.route("/update-db")
+def update_pm25_db():
+    nowtime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    count, message = update_db()
+    info = {"更新筆數": count, "結果": message, "時間": nowtime}
+
+    # 因為回傳的資訊有中文，所以使用 json.dumps() 的 ensure_ascii=False 的設定來做轉碼
+    result = json.dumps(info, ensure_ascii=False)
+
+    return result
 
 
 # 當程式是跑在本地運行的時候，才會跑以下的程式碼，
