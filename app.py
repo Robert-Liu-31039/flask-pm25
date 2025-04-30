@@ -92,7 +92,7 @@ def get_bmi():
 def update_pm25_db():
     nowtime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     count, message = update_db()
-    info = {"更新筆數": count, "結果": message, "時間": nowtime}
+    info = {"時間": nowtime, "更新筆數": count, "結果": message}
 
     # 因為回傳的資訊有中文，所以使用 json.dumps() 的 ensure_ascii=False 的設定來做轉碼
     result = json.dumps(info, ensure_ascii=False)
