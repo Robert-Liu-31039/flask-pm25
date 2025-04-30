@@ -16,13 +16,14 @@
         <!-- 縣市選擇框 -->
         <select name="county" id="county">
             <option value="ALL">全部縣市</option>
-            {% for county in counties %}
-            <option value="{{county}}">{{county}}</option>
+            {% for i in counties %}            
+            <option value="{{i}}" {% if county == i %} selected {% endif %}>{{i}}</option>            
             {% endfor %}
         </select>
         <button type="submit">查詢</button>
     </form>
 
+    <h2 style="text-align:left; margin-left:64px; color: green;">選擇縣市:{{county}}</h2>
     <table border="1">
         <thead>
             <tr>

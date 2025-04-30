@@ -29,6 +29,9 @@ def index():
         datas = df1.values.tolist()
         print(df1)
 
+    # **locals() -> 會把區域端的所有變數全部都丟過去，
+    # 好處是 : 當要傳遞的參數很多時，不用一個一個寫
+    # 壞處是 : 效能會變差
     return render_template("index.html", **locals())
 
 
