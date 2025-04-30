@@ -20,6 +20,15 @@ def index():
     df = pd.DataFrame(datas, columns=columns)
     counties = sorted(df["county"].unique().tolist())
 
+    # 選取縣市後的資料(預設值 ALL)
+    county = request.args.get("county", "ALL")
+
+    if county != "ALL":
+        df1 = df.groupby("county").get_group(county)
+        columns = df1.columns.tolist()
+        datas = df1.values.tolist()
+        print(df1)
+
     return render_template("index.html", **locals())
 
 

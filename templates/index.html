@@ -11,10 +11,11 @@
     <h3>最新更新時間: {{datas[0][4]}}</h3>
     <a class="btn-update" href="/update-db">更新資料庫</a>
 
-    <form action="/filter" method="post">
+    <form action="/" method="get">
         <label for="county">選取縣市</label>
         <!-- 縣市選擇框 -->
         <select name="county" id="county">
+            <option value="ALL">全部縣市</option>
             {% for county in counties %}
             <option value="{{county}}">{{county}}</option>
             {% endfor %}
