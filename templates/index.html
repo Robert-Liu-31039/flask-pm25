@@ -26,7 +26,7 @@
     <table border="1">
         <thead>
             <tr>
-                {% for col in columns %}
+                {% for col in columns[1:] %}
                 <th>{{col}}</th>
                 {% endfor %}
             </tr>
@@ -34,7 +34,7 @@
         <tbody>
             {% for row in datas %}
             <tr>                
-                {% for data in row %}
+                {% for data in row[1:] %}
                 <td>{{data}}</td>
                 {% endfor %}                
             </tr>
