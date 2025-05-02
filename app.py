@@ -24,6 +24,8 @@ def index():
     county = request.args.get("county", "ALL")
 
     if county == "ALL":
+        # 因為如果是 ALL 的呈現時，資料的筆試會過多，
+        # 所以畫面會很難看，所以將資料改為只取 county 的平均值
         df1 = df.groupby("county")["pm25"].mean().reset_index()
 
         # 繪製所需資料

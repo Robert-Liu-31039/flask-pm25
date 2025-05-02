@@ -80,11 +80,16 @@
           },
           tooltip: {},
           legend: {
-            data: ['销量']
+            data: ['PM25']
           },
           xAxis: {
             data: labels
           },
+          dataZoom:[{
+            type:'slider',
+            start:0,
+            end:100
+          }],
           yAxis: {},
           series: [
             {
