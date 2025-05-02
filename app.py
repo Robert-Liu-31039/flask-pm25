@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from datetime import datetime
 import pymysql
 import pandas as pd
-from pm25 import get_pm25_data_from_mysql, update_db
+from pm25 import get_pm25_data_from_mysql, update_db, get_pm25_data_by_site
 import json
 
 # __name__ <- 指的就是本頁
@@ -143,6 +143,34 @@ def update_pm25_db():
 
     # 因為回傳的資訊有中文，所以使用 json.dumps() 的 ensure_ascii=False 的設定來做轉碼
     result = json.dumps(info, ensure_ascii=False)
+
+    return result
+
+
+@app.route("/pm25-data-site")
+def pm25_data_by_site():
+    county = request.args.get("county")
+    site = request.args.get("site")
+
+    if not county or not site:
+        # 因為回傳的資訊有中文，所以使用 json.dumps() 的 ensure_ascii=False 的設定來做轉碼
+        result = json.dumps({"error": "縣市跟站點名稱不能為空!"}, ensure_ascii=False)
+    else:
+        columns, datas = get_pm25_data_by_site(county=county, site=site)
+
+        # 取得該縣市的資料
+        df = pd.DataFrame(datas, columns=columns)
+        date = df["datacreationdate"].apply(lambda x: x.strftime("%Y-%m-%d %H"))
+
+        result = json.dumps(
+            {
+                "county": county,
+                "site": site,
+                "x_data": date.tolist(),
+                "y_data": df["pm25"].tolist(),
+            },
+            ensure_ascii=False,
+        )
 
     return result
 
