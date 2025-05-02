@@ -2,7 +2,13 @@ from flask import Flask, render_template, request
 from datetime import datetime
 import pymysql
 import pandas as pd
-from pm25 import get_pm25_data_from_mysql, update_db, get_pm25_data_by_site
+from pm25 import (
+    get_pm25_data_from_mysql,
+    update_db,
+    get_pm25_data_by_site,
+    get_all_counties,
+    get_site_by_county,
+)
 import json
 
 # __name__ <- 指的就是本頁
@@ -171,6 +177,23 @@ def pm25_data_by_site():
             },
             ensure_ascii=False,
         )
+
+    return result
+
+
+@app.route("/pm25-site")
+def pm25_site():
+    counties = get_all_counties()
+    sites = get_site_by_county(counties[0])
+    return render_template("pm25-site.html", counties=counties, sites=sites)
+
+
+@app.route("/pm25-county-site")
+def pm25_county_site():
+    county = request.args.get("county")
+    sites = get_site_by_county(county)
+
+    result = json.dumps(sites, ensure_ascii=False)
 
     return result
 

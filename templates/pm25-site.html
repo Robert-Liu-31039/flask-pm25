@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>站點PM2.5資訊頁</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+      #main{
+        text-align: center;
+        margin: 0 auto;
+      }
+    </style>
+</head>
+<body>
+    <h1>站點系懸浮微粒資料(PM2.5)</h1>    
+    <h3>選擇縣市</h3>
+    <select name="county" id="county">
+        {% for county in counties %}
+        <option value="{{county}}">{{county}}</option>
+        {% endfor %}
+    </select>
+    <h3>選擇站點</h3>
+    <select name="site" id="site">
+        {% for site in sites %}
+        <option value="{{site}}">{{site}}</option>
+        {% endfor %}
+    </select>
+    <p>
+        <button type="button" onclick="query()">查詢</button>
+    </p>
+    <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+    <div id="main" style="width: 600px;height:400px;"></div>
+    <script>
+        const countyEl = document.querySelector("#county");
+        const siteEl = document.querySelector("#site");
+
+        // 基于准备好的dom，初始化echarts实例
+        const chart1 = echarts.init(document.getElementById('main'));
+
+        countyEl.addEventListener("change", ()=>{
+            let county = countyEl.value;
+            const url = `/pm25-county-site?county=${county}`
+
+            // js 內建的 fetch 函式 : 動態去呼叫 url
+            fetch(url)
+            .then(res=>res.json())
+            .then(data=>{
+                console.log(data);
+                siteEl.innerHTML = "";
+
+                for(let i=0;i<data.length;i++){
+                    const opt = document.createElement("option");
+                    opt.value = data[i];
+                    opt.textContent = data[i];
+                    siteEl.appendChild(opt);
+                }
+
+            });
+        });
+
+        function drawChart(chart, site, labels, values){
+                        
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: `${site} PM2.5數據柱狀圖`
+                },
+                tooltip: {},
+                legend: {
+                    data: ['PM25']
+                },
+                xAxis: {
+                    data: labels
+                },
+                dataZoom:[{
+                    type:'slider',
+                    start:0,
+                    end:100
+                }],
+                yAxis: {},
+                series: [
+                    {
+                        name: 'PM25',
+                        type: 'line',
+                        smooth: true,
+                        itemStyle: {
+                            color: 'rgb(255, 70, 13)'
+                        },
+                        data: values
+                    },
+                
+                ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            chart.setOption(option);
+        }
+
+        function query(){
+            let county = countyEl.value;
+            let site = siteEl.value;
+
+            const url = `/pm25-data-site?county=${county}&site=${site}`;
+
+            console.log(countyEl.value, siteEl.value, url);
+
+            // js 內建的 fetch 函式 : 動態去呼叫 url
+            fetch(url)
+            .then(res=>res.json())
+            .then(data=>{
+                console.log(data);
+                drawChart(chart1, data.site, data.x_data, data.y_data);
+            });
+            
+        }
+
+    </script>
+</body>
+</html>

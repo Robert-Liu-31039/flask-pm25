@@ -89,7 +89,7 @@ def get_pm25_data_by_site(county, site):
 
         # 使用 %s 傳入變數的值
         sqlstr = "select * from pm25 where county = %s and site = %s;"
-        #  在 execute 中，變數哪怕只有一個也要是寫這樣的格式 (@變數)
+        #  在 execute 中，變數哪怕只有一個也要是寫這樣的格式 (@變數,)
         cursor.execute(sqlstr, (county, site))
 
         # 取得 Table 的欄位名稱
@@ -107,6 +107,73 @@ def get_pm25_data_by_site(county, site):
     return columns, datas
 
 
+def get_all_counties():
+    conn = None
+    counties = []
+
+    try:
+        conn = open_db()
+        cursor = conn.cursor()
+
+        sqlstr = "select distinct county from pm25;"
+        cursor.execute(sqlstr)
+        datas = cursor.fetchall()
+
+        counties = [data[0] for data in datas]
+    except Exception as ex:
+        print(ex)
+    finally:
+        if conn is not None:
+            conn.close()
+
+    return counties
+
+
+def get_all_sites():
+    conn = None
+    sites = []
+
+    try:
+        conn = open_db()
+        cursor = conn.cursor()
+
+        sqlstr = "select distinct site from pm25;"
+        cursor.execute(sqlstr)
+        datas = cursor.fetchall()
+
+        sites = [data[0] for data in datas]
+    except Exception as ex:
+        print(ex)
+    finally:
+        if conn is not None:
+            conn.close()
+
+    return sites
+
+
+def get_site_by_county(county):
+    conn = None
+    sites = []
+
+    try:
+        conn = open_db()
+        cursor = conn.cursor()
+
+        sqlstr = "select distinct site from pm25 where county=%s;"
+        #  在 execute 中，變數哪怕只有一個也要是寫這樣的格式 (@變數,)
+        cursor.execute(sqlstr, (county,))
+        datas = cursor.fetchall()
+
+        sites = [data[0] for data in datas]
+    except Exception as ex:
+        print(ex)
+    finally:
+        if conn is not None:
+            conn.close()
+
+    return sites
+
+
 # 當程式是跑在本地運行的時候，才會跑以下的程式碼，
 # 不然若是有其他程式 call 你這支程式碼時，
 # 就會把以下的程式自動 run 起來了(誤跑)!
@@ -115,4 +182,6 @@ if __name__ == "__main__":
     # print(columns, datas)
 
     # update_db()
-    print(get_pm25_data_by_site("新北市", "富貴角"))
+    # print(get_pm25_data_by_site("新北市", "富貴角"))
+    # print(get_all_counties())
+    print(get_site_by_county("新北市"))
