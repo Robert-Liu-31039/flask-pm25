@@ -23,11 +23,20 @@ def index():
     # 選取縣市後的資料(預設值 ALL)
     county = request.args.get("county", "ALL")
 
-    if county != "ALL":
-        df1 = df.groupby("county").get_group(county)
-        columns = df1.columns.tolist()
-        datas = df1.values.tolist()
-        print(df1)
+    if county == "ALL":
+        df1 = df.groupby("county")["pm25"].mean().reset_index()
+
+        # 繪製所需資料
+        x_data = df1["county"].tolist()
+    else:
+        df = df.groupby("county").get_group(county)
+
+        # 繪製所需資料
+        x_data = df["site"].tolist()
+
+    y_data = df["pm25"].tolist()
+    columns = df.columns.tolist()
+    datas = df.values.tolist()
 
     # **locals() -> 會把區域端的所有變數全部都丟過去，
     # 好處是 : 當要傳遞的參數很多時，不用一個一個寫

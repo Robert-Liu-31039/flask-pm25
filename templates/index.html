@@ -4,11 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>首頁</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>    
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+      #main{
+        text-align: center;
+        margin: 0 auto;
+      }
+    </style>
 </head>
 <body>
     <h1>細懸浮微粒資料(PM2.5)</h1>
     <h3>最新更新時間: {{datas[0][4]}}</h3>
+    <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+    <div id="main" style="width: 600px;height:400px;"></div>
+
     <a class="btn-update" href="/update-db">更新資料庫</a>
 
     <form action="/" method="get">
@@ -22,6 +32,12 @@
         </select>
         <button type="submit">查詢</button>
     </form>
+
+    <!-- JinJa 2 將物件轉為 JSON 的特殊寫法 -> @物件 | tojson -->
+    <div id="chart-data" data-labels='{{ x_data | tojson }}' data-values='{{ y_data | tojson }}'>
+             
+        
+    </div>  
 
     <h2 style="text-align:left; margin-left:64px; color: green;">選擇縣市:{{county}}</h2>
     <table border="1">
@@ -42,5 +58,45 @@
             {% endfor %}
         </tbody>
     </table>    
+    
+    <script type="text/javascript">
+        const chartData = document.querySelector("#chart-data");
+
+        // js 抓取 html 的 data-@變數名稱 的屬性時，
+        // 使用的是 @dom物件.dataset.@變數名稱 的方式去宣告取得
+        const labels = JSON.parse(chartData.dataset.labels);
+        const values = JSON.parse(chartData.dataset.values);
+
+        console.log(chartData, labels, values);
+        
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+  
+        // 指定图表的配置项和数据
+        var option = {
+          title: {
+            text: 'PM2.5數據柱狀圖'
+          },
+          tooltip: {},
+          legend: {
+            data: ['销量']
+          },
+          xAxis: {
+            data: labels
+          },
+          yAxis: {},
+          series: [
+            {
+              name: '销量',
+              type: 'bar',
+              data: values
+            }
+          ]
+        };
+  
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+      </script>
 </body>
 </html>
