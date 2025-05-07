@@ -7,6 +7,7 @@ from pm25 import (
     update_db,
     get_pm25_data_by_site,
     get_all_counties,
+    get_all_sites,
     get_site_by_county,
 )
 import json
@@ -174,6 +175,8 @@ def pm25_data_by_site():
                 "site": site,
                 "x_data": date.tolist(),
                 "y_data": df["pm25"].tolist(),
+                "higher": df["pm25"].max(),
+                "lower": df["pm25"].min(),
             },
             ensure_ascii=False,
         )
@@ -184,7 +187,7 @@ def pm25_data_by_site():
 @app.route("/pm25-site")
 def pm25_site():
     counties = get_all_counties()
-    sites = get_site_by_county(counties[0])
+    sites = get_all_sites()
     return render_template("pm25-site.html", counties=counties, sites=sites)
 
 

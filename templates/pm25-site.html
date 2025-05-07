@@ -22,16 +22,25 @@
         {% endfor %}
     </select>
     <h3>選擇站點</h3>
-    <select name="site" id="site">
-        {% for site in sites %}
-        <option value="{{site}}">{{site}}</option>
-        {% endfor %}
+    <select name="site" id="site">        
     </select>
     <p>
         <button type="button" onclick="query()">查詢</button>
     </p>
+    <!-- 顯示站點名稱 -->
+    <h2 id="siteName"></h2>
+
     <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
     <div id="main" style="width: 600px;height:400px;"></div>
+
+    <div id="panel">
+        <h3 style="color: black;">
+            Higher:<span class="higher" style="color: darkred;"></span>
+            <br>
+            Lower:<span class="lower" style="color: darkgreen;"></span>
+        </h3>
+    </div>
+
     <script>
         const countyEl = document.querySelector("#county");
         const siteEl = document.querySelector("#site");
@@ -39,7 +48,9 @@
         // 基于准备好的dom，初始化echarts实例
         const chart1 = echarts.init(document.getElementById('main'));
 
-        countyEl.addEventListener("change", ()=>{
+        updateSite();
+
+        function updateSite(){
             let county = countyEl.value;
             const url = `/pm25-county-site?county=${county}`
 
@@ -58,6 +69,10 @@
                 }
 
             });
+        }
+
+        countyEl.addEventListener("change", ()=>{
+            updateSite();
         });
 
         function drawChart(chart, site, labels, values){
@@ -65,7 +80,7 @@
             // 指定图表的配置项和数据
             var option = {
                 title: {
-                    text: `${site} PM2.5數據柱狀圖`
+                    //text: `${site} PM2.5數據柱狀圖`
                 },
                 tooltip: {},
                 legend: {
@@ -102,6 +117,8 @@
             let county = countyEl.value;
             let site = siteEl.value;
 
+            document.querySelector("#siteName").innerHTML = `${county}-${site}`;
+
             const url = `/pm25-data-site?county=${county}&site=${site}`;
 
             console.log(countyEl.value, siteEl.value, url);
@@ -112,7 +129,10 @@
             .then(data=>{
                 console.log(data);
                 drawChart(chart1, data.site, data.x_data, data.y_data);
-            });
+
+                document.querySelector(".higher").innerHTML = data.higher;
+                document.querySelector(".lower").innerHTML = data.lower;
+            });           
             
         }
 
